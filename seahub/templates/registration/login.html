@@ -38,6 +38,10 @@
     </label>
 
     <input type="submit" value="{% trans "Log In" %}" class="submit" />
+
+    <a href="{% url 'oauth_login' 'github' %}" title="{% trans "Log in With Github" %}">{% trans "Log in With Github" %}</a>
+    <a href="{% url 'oauth_login' 'google' %}" title="{% trans "Log in With Google" %}">{% trans "Log in With Google" %}</a>
+
     {% if enable_signup %}
     <a href="{{ signup_url }}">{% trans "Signup" %}</a>
     {% endif %}
