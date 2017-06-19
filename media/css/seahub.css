@@ -680,6 +680,11 @@ textarea:-moz-placeholder {/* for FF */
     border-top-right-radius:2px;
     border-bottom-right-radius:2px;
 }
+.sf-btn-group-btn-cur,
+.sf-btn-group-btn:hover {
+    color:#fff;
+    background:#feac74;
+}
 .sf2-icon-edit.sf-btn-group-btn {
     font-size:20px;
     opacity:1;
@@ -3829,4 +3834,19 @@ img.thumbnail {
     padding:40px;
     width:800px;
     overflow:auto;
+}
+/* sysadmin statistic */
+.system-statistic-time-range {
+    margin: 15px 0 25px;
+}
+.date-custom-form {
+    margin-left:10px;
+}
+.date-custom-form .input,
+.date-custom-form .submit {
+    margin:0;
+}
+.date-custom-form .input {
+    height:25px;
+    width:100px;
 }
