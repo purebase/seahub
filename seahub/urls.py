@@ -43,6 +43,7 @@ from seahub.api2.endpoints.notifications import NotificationsView, NotificationV
 from seahub.api2.endpoints.user_enabled_modules import UserEnabledModulesView
 from seahub.api2.endpoints.repo_file_uploaded_bytes import RepoFileUploadedBytesView
 from seahub.api2.endpoints.user_avatar import UserAvatarView
+from seahub.api2.endpoints.version_tags import VersionTags, VersionTag
 
 # Admin
 from seahub.api2.endpoints.admin.login import Login
@@ -213,6 +214,8 @@ urlpatterns = patterns(
     url(r'^api/v2.1/repos/(?P<repo_id>[-0-9a-f]{36})/dir/$', DirView.as_view(), name='api-v2.1-dir-view'),
     url(r'^api/v2.1/repos/(?P<repo_id>[-0-9a-f]{36})/trash/$', RepoTrash.as_view(), name='api-v2.1-repo-trash'),
     url(r'^api/v2.1/repos/(?P<repo_id>[-0-9a-f]{36})/history/$', RepoHistory.as_view(), name='api-v2.1-repo-history'),
+    url(r'^api/v2.1/repos/(?P<repo_id>[-0-9a-f]{36})/version_tags/$', VersionTags.as_view(), name='api-v2.1-version-tags'),
+    url(r'^api/v2.1/repos/(?P<repo_id>[-0-9a-f]{36})/version_tags/(?P<tag_name>.*?)/$', VersionTag.as_view(), name='api-v2.1-version-tag'),
     url(r'^api/v2.1/repos/(?P<repo_id>[-0-9a-f]{36})/set-password/$', RepoSetPassword.as_view(), name="api-v2.1-repo-set-password"),
 
     ## user::download-dir-zip-task
