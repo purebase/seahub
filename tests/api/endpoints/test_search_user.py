@@ -35,6 +35,35 @@ class SearchUserTest(BaseTestCase):
         assert json_resp['users'][0]['name'] == nickname
         assert json_resp['users'][0]['contact_email'] == contact_email
 
+    @override_settings(ENABLE_ADDRESSBOOK_OPT_IN = True)
+    def test_search_when_enable_addressbook_opt_in(self):
+        email = self.admin.email
+        nickname = 'admin_test'
+        contact_email= 'new_admin_test@test.com'
+        p = Profile.objects.add_or_update(email, nickname=nickname)
+        p.contact_email = contact_email
+        p.save()
+
+        resp = self.client.get(self.endpoint + '?q=' + email)
+        json_resp = json.loads(resp.content)
+
+        self.assertEqual(200, resp.status_code)
+        assert json_resp['users'] is not None
+        assert len(json_resp['users']) == 0
+
+        p.list_in_address_book = True
+        p.save()
+
+        resp = self.client.get(self.endpoint + '?q=' + email)
+        json_resp = json.loads(resp.content)
+
+        self.assertEqual(200, resp.status_code)
+        assert json_resp['users'] is not None
+        assert json_resp['users'][0]['email'] == email
+        assert json_resp['users'][0]['avatar_url'] is not None
+        assert json_resp['users'][0]['name'] == nickname
+        assert json_resp['users'][0]['contact_email'] == contact_email
+
     @override_settings(CLOUD_MODE = False)
     def test_search_myself(self):
         email = self.user.email
