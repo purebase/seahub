@@ -627,13 +627,19 @@ if EVENTS_CONFIG_FILE:
         15th events.
         """
         return _get_events(username, start, count)
-    
+   
     def get_user_activity_stats(start, end):
-        """
-        Return user activity record of the specified time
+        """ Return user activity record of the specified time
         """
         with _get_seafevents_session() as session:
-            res = seafevents.get_user_activity_stats(ev_session, start, end)
+            res = seafevents.get_user_activity_stats(session, start, end)
+        return res
+
+    def get_user_activity_stats_by_day(start, end):
+        """
+        """
+        with _get_seafevents_session() as session:
+            res = seafevents.get_user.get_user_activity_stats_by_day(session, start, end)
         return res
 
     def get_org_user_events(org_id, username, start, count):
@@ -686,30 +692,31 @@ if EVENTS_CONFIG_FILE:
         return events if events else None
 
     def get_file_audit_stats(start, end):
-        """
-        Return file audit record of specifiy time.
+        """ Return file audit record of specifiy time.
         """
         with _get_seafevents_session() as session:
             res = seafevents.get_file_audit_stats(session, start, end)
-
         return res
 
     def get_file_audit_stats_by_day(start, end):
-        """
-        return file audit record of sepcifiy time group by day.
+        """ return file audit record of sepcifiy time group by day.
         """
         with _get_seafevents_session() as session:
             res = seafevents.get_file_audit_stats_by_day(session, start, end)
-
         return res
 
     def get_total_storage_stats(start, end):
-        """
-        Return total storage record of specified time.
+        """ Return total storage record of specified time.
         """
         with _get_seafevents_session() as session:
             res = seafevents.get_total_storage_stats(session, start, end)
+        return res
 
+    def get_total_storage_stats_by_day(start, end):
+        """
+        """
+        with _get_seafevents_session() as session:
+            res = seafevents.get_total_storage_stats_by_day(session, start, end)
         return res
 
     def get_file_update_events(email, org_id, repo_id, start, limit):
@@ -723,7 +730,6 @@ if EVENTS_CONFIG_FILE:
         """
         with _get_seafevents_session() as session:
             events = seafevents.get_file_update_events(session, email, org_id, repo_id, start, limit)
-
         return events if events else None
 
     def get_perm_audit_events(email, org_id, repo_id, start, limit):
@@ -758,6 +764,8 @@ else:
         pass
     def get_user_activity_stats():
         pass
+    def get_user_activity_stats_by_day():
+        pass
     def get_log_events_by_time():
         pass
     def get_org_user_events():
@@ -773,6 +781,8 @@ else:
     def get_file_audit_stats_by_day():
         pass
     def get_total_storage_stats():
+        pass
+    def get_total_storage_stats_by_day():
         pass
     def get_file_update_events():
         pass
