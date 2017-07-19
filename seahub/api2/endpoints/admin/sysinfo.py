@@ -5,7 +5,6 @@ import logging
 
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAdminUser
-from django.utils.translation import ugettext as _
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
@@ -14,8 +13,8 @@ from seaserv import seafile_api, ccnet_api
 from pysearpc import SearpcError
 
 from seahub.utils import is_pro_version
-from seahub.utils import get_file_audit_stats, get_file_audit_stats_by_day,\
-        get_total_storage_stats, get_total_storage_stats_by_day,\
+from seahub.utils import get_file_audit_stats, get_file_audit_stats_by_day, \
+        get_total_storage_stats, get_total_storage_stats_by_day, \
         get_user_activity_stats, get_user_activity_stats_by_day
 from seahub.utils.licenseparse import parse_license
 
@@ -94,7 +93,7 @@ class SysInfo(APIView):
         active_users = active_db_users + active_ldap_users if \
             active_ldap_users > 0 else active_db_users
 
-        inactive_users = inactive_db_users + inactive_ldap_users if\
+        inactive_users = inactive_db_users + inactive_ldap_users if \
             inactive_ldap_users > 0 else inactive_db_users
 
         # get license info
@@ -171,25 +170,25 @@ def check_parameter(func):
         end_time = request.GET.get("end", "")
         group_by = request.GET.get("group_by", "hour")
         if not start_time:
-            error_msg = _("Start time can not be empty")
+            error_msg = "Start time can not be empty"
             return api_error(status.HTTP_400_BAD_REQUEST, error_msg)
         if not end_time:
-            error_msg = _("End time can not be empty")
+            error_msg = "End time can not be empty"
             return api_error(status.HTTP_400_BAD_REQUEST, error_msg)
         if group_by.lower() not in ["hour", "day"]:
-            error_msg = "Record only can group by day or hour"
+            error_msg = "Record can only group by day or hour"
             return api_error(status.HTTP_400_BAD_REQUEST, error_msg)
         try:
             start_time = datetime.datetime.strptime(start_time,
                                                     "%Y-%m-%d %H:%M:%S")
         except:
-            error_msg = _("Start time %s invalid") % start_time
+            error_msg = "Start time %s invalid" % start_time
             return api_error(status.HTTP_400_BAD_REQUEST, error_msg)
         try:
             end_time = datetime.datetime.strptime(end_time,
                                                   "%Y-%m-%d %H:%M:%S")
         except:
-            error_msg = _("End time %s invalid") % end_time
+            error_msg = "End time %s invalid" % end_time
             return api_error(status.HTTP_400_BAD_REQUEST, error_msg)
 
         return func(view, request, start_time, end_time, group_by)
@@ -221,6 +220,9 @@ class FileOperationsView(APIView):
             data = get_file_audit_stats(start_time, end_time)
         elif group_by == "day":
             data = get_file_audit_stats_by_day(start_time, end_time)
+        if data is None:
+            error_msg = "unsupported service"
+            return api_error(status.HTTP_503_SERVICE_UNAVAILABLE, error_msg)
 
         res_data = []
         dict_data = {}
@@ -229,6 +231,8 @@ class FileOperationsView(APIView):
             if dict_data.get(timestamp, None) is None:
                 dict_data[timestamp] = {}
             dict_data[timestamp][i[1]] = i[2]
+        if len(dict_data) == 0:
+            return Response(status.HTTP_200_OK)
         for x, y in dict_data.items():
             timeArray = time.localtime(int(x))
             x = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
@@ -252,6 +256,9 @@ class TotalStorageView(APIView):
             data = get_total_storage_stats(start_time, end_time)
         elif group_by == "day":
             data = get_total_storage_stats_by_day(start_time, end_time)
+        if data is None:
+            error_msg = "unsupported service"
+            return api_error(status.HTTP_503_SERVICE_UNAVAILABLE, error_msg)
 
         res_data = []
         for i in data:
@@ -259,7 +266,10 @@ class TotalStorageView(APIView):
             select_time = time.strftime("%Y-%m-%d %H:%M:%S",
                                         time.localtime(timestamp))
             res_data.append({'datetime': select_time, 'total_storage': i[1]})
-        return Response(sorted(res_data, key=lambda x: x['datetime']))
+        if len(res_data) > 0:
+            return Response(sorted(res_data, key=lambda x: x['datetime']))
+        else:
+            return Response(status.HTTP_200_OK)
 
 
 class ActiveUsersView(APIView):
@@ -273,6 +283,9 @@ class ActiveUsersView(APIView):
             data = get_user_activity_stats(start_time, end_time)
         elif group_by == "day":
             data = get_user_activity_stats_by_day(start_time, end_time)
+        if data is None:
+            error_msg = "unsupported service"
+            return api_error(status.HTTP_503_SERVICE_UNAVAILABLE, error_msg)
 
         res_data = []
         for i in data:
@@ -280,4 +293,7 @@ class ActiveUsersView(APIView):
             select_time = time.strftime("%Y-%m-%d %H:%M:%S",
                                         time.localtime(timestamp))
             res_data.append({'datetime': select_time, 'count': i[1]})
-        return Response(sorted(res_data, key=lambda x: x['datetime']))
+        if len(res_data) > 0:
+            return Response(sorted(res_data, key=lambda x: x['datetime']))
+        else:
+            return Response(status.HTTP_200_OK)
